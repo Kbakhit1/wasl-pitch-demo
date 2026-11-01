@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>وَصْل · العرض الاستثماري</title>
+<meta name="description" content="نموذج تفاعلي لعرض استثماري: وسيط طبي بين الجمعيات الخيرية والمراكز الطبية.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0B2530;--ink2:#123845;--teal:#0F8B8D;--teal2:#14B8A6;--mint:#D8F3EE;
+  --sand:#F6F1EA;--paper:#FFFDF9;--line:#E6DED2;--muted:#6B7C83;
+  --coral:#F0705A;--gold:#E8B04A;--ok:#19A974;
+  --r:18px;--shadow:0 18px 50px rgba(11,37,48,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;background:var(--sand);color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.disp{font-family:"Alexandria","IBM Plex Sans Arabic",sans-serif;letter-spacing:0}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.app{height:100dvh;display:grid;grid-template-rows:auto 1fr auto}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:14px;padding:12px 22px;background:rgba(255,253,249,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);z-index:5}
+.brand{display:flex;align-items:center;gap:10px;font-family:Alexandria;font-weight:800;font-size:20px}
+.brand svg{width:34px;height:34px}
+.brand small{display:block;font:500 11px "IBM Plex Sans Arabic";color:var(--muted)}
+.tabs{margin-inline-start:auto;display:flex;background:var(--sand);border:1px solid var(--line);border-radius:999px;padding:4px}
+.tabs button{padding:8px 16px;border-radius:999px;font-weight:600;font-size:14px;color:var(--muted);transition:.25s}
+.tabs button.on{background:var(--ink);color:#fff}
+.tool{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);display:grid;place-items:center;background:var(--paper)}
+.tool svg{width:18px;height:18px}
+.note{font-size:12px;color:#7a5a12;background:#FBF0D7;border:1px solid #F1DCA8;border-radius:999px;padding:5px 12px;white-space:nowrap}
+
+/* stage */
+.stage{position:relative;overflow:hidden}
+.deck{position:absolute;inset:0;display:none}
+.deck.on{display:block}
+.slide{position:absolute;inset:0;padding:clamp(18px,4vw,56px);display:flex;flex-direction:column;justify-content:center;opacity:0;visibility:hidden;transform:translateX(-40px);transition:opacity .55s ease,transform .55s ease,visibility .55s;overflow-y:auto}
+.slide.on{opacity:1;visibility:visible;transform:none}
+.slide.past{transform:translateX(40px)}
+.wrap{width:min(1180px,100%);margin:0 auto}
+.kicker{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--teal);background:var(--mint);padding:6px 12px;border-radius:999px;margin-bottom:14px}
+.kicker i{width:7px;height:7px;border-radius:50%;background:var(--teal2);box-shadow:0 0 0 4px rgba(20,184,166,.18)}
+h2{font-size:clamp(26px,3.6vw,46px);line-height:1.25;font-weight:800;margin-bottom:12px}
+h2 em{font-style:normal;color:var(--teal)}
+.lead{font-size:clamp(15px,1.35vw,19px);line-height:1.85;color:#3d5560;max-width:760px}
+.illus{display:inline-block;font-size:11.5px;color:#7a5a12;background:#FBF0D7;border-radius:6px;padding:2px 8px;margin-inline-start:8px;vertical-align:middle}
+.rise>*{opacity:0;transform:translateY(18px);transition:.6s ease}
+.slide.on .rise>*{opacity:1;transform:none}
+.slide.on .rise>*:nth-child(2){transition-delay:.08s}.slide.on .rise>*:nth-child(3){transition-delay:.16s}
+.slide.on .rise>*:nth-child(4){transition-delay:.24s}.slide.on .rise>*:nth-child(5){transition-delay:.32s}
+.slide.on .rise>*:nth-child(6){transition-delay:.4s}
+
+/* cover */
+.cover{background:radial-gradient(1200px 600px at 80% -10%,#1d5a63 0%,transparent 60%),linear-gradient(160deg,var(--ink),#0a1d26 70%);color:#fff}
+.cover .lead{color:#bcd3d6}
+.cover .kicker{background:rgba(20,184,166,.15);color:#7fe6d6}
+.cover h1{font-size:clamp(40px,7vw,92px);line-height:1.05;font-weight:800;margin:6px 0 16px}
+.cover h1 span{background:linear-gradient(90deg,#7fe6d6,#f7c873);-webkit-background-clip:text;background-clip:text;color:transparent}
+.bridge{margin-top:30px;width:100%;max-width:980px}
+.bridge .node rect{fill:rgba(255,255,255,.06);stroke:rgba(255,255,255,.18)}
+.bridge text{fill:#e6f3f2;font:600 15px "IBM Plex Sans Arabic"}
+.bridge .sub{fill:#8fb1b5;font-size:12px;font-weight:500}
+.bridge .arc{fill:none;stroke:url(#gArc);stroke-width:3;stroke-dasharray:6 8;animation:dash 2.8s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-140}}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:13px 20px;border-radius:14px;font-weight:700;transition:.2s}
+.btn.pri{background:linear-gradient(120deg,var(--teal2),var(--teal));color:#fff;box-shadow:0 10px 26px rgba(15,139,141,.35)}
+.btn.pri:hover{transform:translateY(-2px)}
+.btn.ghost{border:1px solid rgba(255,255,255,.25);color:#fff}
+
+/* cards */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:26px}
+.grid2{display:grid;grid-template-columns:1.05fr 1fr;gap:26px;align-items:center}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px;box-shadow:var(--shadow)}
+.card h3{font-size:19px;margin:12px 0 6px}
+.card p{color:#4c626b;line-height:1.75;font-size:15px}
+.ico{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:var(--mint);color:var(--teal)}
+.ico.c{background:#FDE5DF;color:var(--coral)}.ico.g{background:#FBF0D7;color:#B07C12}
+.ico svg{width:24px;height:24px}
+.pain-bar{height:8px;border-radius:9px;background:#EFE8DD;margin-top:14px;overflow:hidden}
+.pain-bar b{display:block;height:100%;width:0;border-radius:9px;background:linear-gradient(90deg,var(--coral),var(--gold));transition:width 1.4s cubic-bezier(.2,.8,.2,1) .3s}
+.slide.on .pain-bar b{width:var(--w)}
+
+/* journey */
+.journey{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:30px;position:relative}
+.journey:before{content:"";position:absolute;top:34px;right:6%;left:6%;height:3px;background:#E3DACD;border-radius:3px}
+.journey .fill{position:absolute;top:34px;right:6%;height:3px;width:0;background:linear-gradient(270deg,var(--teal2),var(--teal));border-radius:3px;transition:width .6s ease}
+.step{position:relative;text-align:center;padding:0 4px;cursor:pointer}
+.step .dot{width:68px;height:68px;margin:0 auto 12px;border-radius:50%;background:var(--paper);border:2px solid #E3DACD;display:grid;place-items:center;transition:.35s;position:relative;z-index:1}
+.step .dot svg{width:26px;height:26px;color:var(--muted)}
+.step.done .dot{border-color:var(--teal2);background:var(--mint)}
+.step.done .dot svg{color:var(--teal)}
+.step.cur .dot{transform:scale(1.12);box-shadow:0 0 0 8px rgba(20,184,166,.15)}
+.step b{display:block;font-size:15px}
+.step small{color:var(--muted);font-size:12.5px;line-height:1.5;display:block;margin-top:4px}
+.jdetail{margin-top:26px;min-height:96px}
+.jdetail .card{display:flex;gap:16px;align-items:flex-start}
+
+/* priority */
+.sl{margin:16px 0}
+.sl label{display:flex;justify-content:space-between;font-weight:600;font-size:15px;margin-bottom:8px}
+.sl label span{color:var(--teal);font-family:Alexandria}
+input[type=range]{width:100%;accent-color:var(--teal);height:6px}
+.gauge{position:relative;width:min(340px,80vw);margin:0 auto}
+.gauge .val{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding-top:40px}
+.gauge .val b{font:800 54px Alexandria;display:block;line-height:1}
+.pill{display:inline-block;padding:6px 14px;border-radius:999px;font-weight:700;font-size:14px;margin-top:8px}
+.p-crit{background:#FDE5DF;color:#C2412B}.p-high{background:#FBF0D7;color:#9A6A08}.p-mid{background:var(--mint);color:var(--teal)}
+.why{margin-top:14px;font-size:14px;color:#4c626b;line-height:1.7;text-align:center}
+
+/* quotes */
+.quotes{display:grid;gap:14px;margin-top:8px}
+.q{display:grid;grid-template-columns:150px 1fr 110px;gap:14px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:14px 16px;transition:.4s;opacity:0;transform:translateX(-20px)}
+.q.in{opacity:1;transform:none}
+.q.best{border-color:var(--teal2);box-shadow:0 0 0 4px rgba(20,184,166,.14)}
+.q .nm b{display:block}.q .nm small{color:var(--muted);font-size:12.5px}
+.q .bar{height:12px;border-radius:9px;background:#EFE8DD;overflow:hidden}
+.q .bar i{display:block;height:100%;width:0;border-radius:9px;background:linear-gradient(90deg,#9db5bb,#6f8f97);transition:width 1s ease}
+.q.best .bar i{background:linear-gradient(90deg,var(--teal2),var(--teal))}
+.q .pr{font:700 18px Alexandria;text-align:left}
+.q .pr small{display:block;font:500 11.5px "IBM Plex Sans Arabic";color:var(--muted)}
+.save{margin-top:18px;display:flex;align-items:center;gap:14px;background:var(--ink);color:#fff;border-radius:16px;padding:16px 20px;opacity:0;transition:.5s}
+.save.in{opacity:1}
+.save b{font:800 30px Alexandria;color:#7fe6d6}
+
+/* tracking */
+.track{position:relative;padding-inline-start:30px;margin-top:6px}
+.track:before{content:"";position:absolute;right:11px;top:6px;bottom:6px;width:2px;background:#E3DACD}
+.ev{position:relative;padding:10px 0 14px;opacity:.35;transition:.4s}
+.ev.in{opacity:1}
+.ev:before{content:"";position:absolute;right:-26px;top:15px;width:14px;height:14px;border-radius:50%;background:var(--paper);border:3px solid #CFC5B6}
+.ev.in:before{border-color:var(--teal2);background:var(--mint)}
+.ev.live:before{border-color:var(--coral);animation:pulse 1.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(240,112,90,.5)}100%{box-shadow:0 0 0 12px rgba(240,112,90,0)}}
+.ev b{display:block}.ev small{color:var(--muted)}
+.phone{width:min(300px,78vw);margin:0 auto;border-radius:38px;background:#0d1b21;padding:12px;box-shadow:var(--shadow)}
+.phone .scr{background:var(--paper);border-radius:28px;padding:18px 16px;min-height:430px}
+.phone .hd{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);margin-bottom:14px}
+.case{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+.case .row{display:flex;justify-content:space-between;font-size:13px}
+.case .prog{height:6px;border-radius:6px;background:#EFE8DD;margin-top:8px;overflow:hidden}
+.case .prog i{display:block;height:100%;background:var(--teal2);width:var(--p)}
+
+/* market */
+.rings{position:relative;width:min(420px,80vw);aspect-ratio:1;margin:0 auto}
+.ring{position:absolute;border-radius:50%;display:flex;align-items:flex-start;justify-content:center;padding-top:14px;transform:scale(.6);opacity:0;transition:.8s cubic-bezier(.2,.8,.2,1)}
+.slide.on .ring{transform:none;opacity:1}
+.ring b{font:800 18px Alexandria}.ring small{display:block;font-size:12px;color:var(--muted)}
+.r1{inset:0;background:#E9F6F3;border:1px solid #CBEAE3}
+.r2{inset:18%;background:#CFEFE8;transition-delay:.15s!important}
+.r3{inset:38%;background:var(--teal);color:#fff;transition-delay:.3s!important;align-items:center;padding:0;text-align:center}
+.r3 small{color:#d4f3ee}
+.legend .card{padding:16px 18px;margin-bottom:12px}
+.legend b{font-family:Alexandria}
+
+/* revenue calc */
+.calc .card{padding:20px}
+.out{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.out div{background:var(--ink);color:#fff;border-radius:14px;padding:14px}
+.out small{color:#9fc1c4;font-size:12px}
+.out b{display:block;font:800 22px Alexandria;margin-top:4px;color:#7fe6d6}
+.stream{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px dashed var(--line)}
+.stream:last-child{border:0}
+.stream .pct{font:800 22px Alexandria;color:var(--teal);min-width:72px}
+
+/* roadmap */
+.road{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:28px}
+.ph{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:20px;position:relative;overflow:hidden}
+.ph:before{content:"";position:absolute;top:0;right:0;left:0;height:5px;background:linear-gradient(90deg,var(--gold),var(--teal2))}
+.ph .q4{font:800 13px Alexandria;color:var(--teal)}
+.ph h3{font-size:18px;margin:8px 0}
+.ph ul{list-style:none;color:#4c626b;font-size:14px;line-height:1.9}
+.ph li:before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--teal2);margin-inline-end:8px;vertical-align:middle}
+
+/* donut */
+.donut{width:min(320px,70vw);margin:0 auto;display:block}
+.donut circle{fill:none;stroke-width:26;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dasharray 1.2s ease}
+
+/* comps */
+.comp{display:grid;grid-template-columns:1fr 1.1fr;gap:28px;align-items:center}
+.flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:18px}
+.flow span{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-weight:600;font-size:14px}
+.flow i{color:var(--teal);font-style:normal;font-weight:800}
+.take{margin-top:18px;background:var(--mint);border-radius:16px;padding:16px 18px;color:#0c4f50;line-height:1.8}
+.take b{display:block;margin-bottom:2px}
+.logoTile{aspect-ratio:16/10;border-radius:22px;display:grid;place-items:center;font:800 clamp(34px,5vw,58px) Alexandria;color:#fff;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.logoTile small{position:absolute;bottom:16px;font:500 13px "IBM Plex Sans Arabic";opacity:.85}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.facts div{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px}
+.facts small{color:var(--muted);font-size:12px;display:block}
+.facts b{font-size:14.5px}
+table.mx{width:100%;border-collapse:separate;border-spacing:0;margin-top:22px;background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden;font-size:15px}
+.mx th,.mx td{padding:14px 12px;text-align:center;border-bottom:1px solid var(--line)}
+.mx th{background:var(--ink);color:#fff;font-weight:600}
+.mx td:first-child,.mx th:first-child{text-align:right;font-weight:700}
+.mx tr:last-child td{border-bottom:0;background:#EAF7F4}
+.yes,.no{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;font-weight:800;font-size:14px}
+.yes{background:var(--mint);color:var(--teal)}.no{background:#F1ECE4;color:#B4A893}
+
+/* bottom nav */
+.nav{display:flex;align-items:center;gap:14px;padding:12px 22px;background:rgba(255,253,249,.9);border-top:1px solid var(--line)}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots button{width:9px;height:9px;border-radius:9px;background:#D8CFC2;transition:.3s}
+.dots button.on{width:26px;background:var(--teal)}
+.count{font:600 13px Alexandria;color:var(--muted);margin-inline-start:auto;white-space:nowrap;direction:ltr}
+.arrow{width:42px;height:42px;border-radius:12px;background:var(--ink);color:#fff;display:grid;place-items:center}
+.arrow svg{width:20px;height:20px}
+.arrow:disabled{opacity:.3}
+.progress{position:absolute;top:0;right:0;height:3px;background:linear-gradient(270deg,var(--teal2),var(--gold));transition:width .5s;z-index:3}
+
+@media (max-width:900px){
+  .note{display:none}
+  .grid3,.road{grid-template-columns:1fr}
+  .grid2,.comp{grid-template-columns:1fr}
+  .journey{grid-template-columns:repeat(3,1fr);row-gap:22px}
+  .journey:before,.journey .fill{display:none}
+  .q{grid-template-columns:1fr 92px}.q .bar{grid-column:1/-1;order:3}
+  .out{grid-template-columns:1fr}
+  .slide{justify-content:flex-start;padding-top:22px;padding-bottom:30px}
+  .top{padding:10px 14px;gap:8px}.brand small{display:none}
+  .tabs button{padding:7px 10px;font-size:12.5px}
+  .facts{grid-template-columns:1fr}
+  table.mx{font-size:12.5px}.mx th,.mx td{padding:10px 6px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#14B8A6"/><stop offset="1" stop-color="#E8B04A"/></linearGradient></defs><rect width="40" height="40" rx="12" fill="#0B2530"/><path d="M8 26c4-11 20-11 24 0" fill="none" stroke="url(#lg)" stroke-width="3.4" stroke-linecap="round"/><circle cx="8" cy="27" r="3.2" fill="#14B8A6"/><circle cx="32" cy="27" r="3.2" fill="#E8B04A"/><path d="M20 14v6M17 17h6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+      <div>وَصْل<small>الوسيط الطبي للجمعيات</small></div>
+    </div>
+    <span class="note">نموذج تفاعلي · المحتوى توضيحي ويُستبدل ببياناتكم</span>
+    <nav class="tabs" role="tablist">
+      <button class="on" data-deck="pitch" role="tab">العرض الاستثماري</button>
+      <button data-deck="comps" role="tab">الشركات المماثلة</button>
+    </nav>
+    <button class="tool" id="fs" title="ملء الشاشة" aria-label="ملء الشاشة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+  </header>
+
+  <main class="stage">
+    <div class="progress" id="prog"></div>
+
+    <!-- ================= PITCH DECK ================= -->
+    <section class="deck on" id="pitch">
+
+      <article class="slide cover">
+        <div class="wrap rise">
+          <span class="kicker"><i></i>عرض استثماري · 2026</span>
+          <h1>كل حالة طبية<br><span>توصل للمكان الصح</span></h1>
+          <p class="lead">وَصْل بتستلم الحالات اللي بتوصل للجمعيات الخيرية وبتدرسها وترتّب أولويتها وتحيلها للمركز الطبي المناسب بأفضل عرض سعر وتتابعها لحد ما تخلص.</p>
+          <svg class="bridge" viewBox="0 0 980 190" role="img" aria-label="مسار الحالة من الجمعية إلى المستشفى">
+            <defs><linearGradient id="gArc" x1="1" x2="0"><stop offset="0" stop-color="#14B8A6"/><stop offset="1" stop-color="#E8B04A"/></linearGradient></defs>
+            <path class="arc" d="M820 120 C 700 10, 600 10, 490 95 S 280 180, 160 120"/>
+            <circle r="7" fill="#7fe6d6"><animateMotion dur="3.2s" repeatCount="indefinite" path="M820 120 C 700 10, 600 10, 490 95 S 280 180, 160 120"/></circle>
+            <circle r="5" fill="#f7c873"><animateMotion dur="3.2s" begin="1.6s" repeatCount="indefinite" path="M820 120 C 700 10, 600 10, 490 95 S 280 180, 160 120"/></circle>
+            <g class="node" transform="translate(830,80)"><rect width="140" height="80" rx="16"/><text x="70" y="36" text-anchor="middle">الجمعية</text><text class="sub" x="70" y="58" text-anchor="middle">الحالة وصلت</text></g>
+            <g class="node" transform="translate(420,55)"><rect width="140" height="80" rx="16"/><text x="70" y="36" text-anchor="middle">وَصْل</text><text class="sub" x="70" y="58" text-anchor="middle">دراسة · أولوية · سعر</text></g>
+            <g class="node" transform="translate(10,80)"><rect width="140" height="80" rx="16"/><text x="70" y="36" text-anchor="middle">المركز الطبي</text><text class="sub" x="70" y="58" text-anchor="middle">علاج ومتابعة</text></g>
+          </svg>
+          <div class="cta-row">
+            <button class="btn pri" data-go="1">ابدأ العرض <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg></button>
+            <button class="btn ghost" data-tab="comps">الشركات المماثلة في أمريكا</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="slide">
+        <div class="wrap rise">
+          <span class="kicker"><i></i>المشكلة</span>
+          <h2>الجمعية عندها الحالة والفلوس <em>وناقصها الطريق</em></h2>
+          <p class="lead">كل جمعية بتتعامل مع الحالات الطبية لوحدها: بتدوّر على مستشفى وبتقبل أول سعر وبتفقد أثر الحالة بعد التحويل.</p>
+          <div class="grid3">
+            <div class="card"><div class="ico c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><h3>الحالة بتستنى</h3><p>مافيش ترتيب أولوية واضح فالحالة الحرجة ممكن تستنى ورا حالة أبسط منها.</p><div class="pain-bar"><b style="--w:82%"></b></div></div>
+            <div class="card"><div class="ico g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><h3>السعر من غير مقارنة</h3><p>الجمعية بتطلب عرض واحد غالبًا ومالهاش قوة تفاوض قدام المستشفى.</p><div class="pain-bar"><b style="--w:70%"></b></div></div>
+            <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div><h3>المتابعة بتقف</h3><p>بعد التحويل الجمعية والمتبرع مايعرفوش الحالة وصلت لفين ولا الفلوس اتصرفت إزاي.</p><div class="pain-bar"><b style="--w:64%"></b></div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="slide">
+        <div class="wrap">
+          <div class="rise"><span class="kicker"><i></i>الحل</span>
+          <h2>رحلة الحالة في <em>6 خطوات</em></h2>
+          <p class="lead">اضغط على أي خطوة أو سيبها تمشي لوحدها.</p></div>
+          <div class="journey" id="journey"><div class="fill" id="jfill"></div></div>
+          <div class="jdetail" id="jdetail"></div>
+        </div>
+      </article>
+
+      <article class="slide">
+        <div class="wrap grid2">
+          <div class="rise">
+            <span class="kicker"><i></i>محرك الأولوية</span>
+            <h2>الأولوية <em>بمعايير ثابتة</em> مش بالإحساس</h2>
+            <p class="lead">حرّك المؤشرات وشوف درجة الحالة بتتغير إزاي. نفس المعايير بتتطبق على كل حالة فالقرار يبقى قابل للمراجعة.</p>
+            <div class="sl"><label>خطورة الحالة <span id="v1">8</span></label><input type="range" min="1" max="10" value="8" id="s1"></div>
+            <div class="sl"><label>الاستعجال <span id="v2">7</span></label><input type="range" min="1" max="10" value="7" id="s2"></div>
+            <div class="sl"><label>احتياج الأسرة المادي <span id="v3">6</span></label><input type="range" min="1" max="10" value="6" id="s3"></div>
+            <div class="sl"><label>فرصة التعافي بعد العلاج <span id="v4">8</span></label><input type="range" min="1" max="10" value="8" id="s4"></div>
+          </div>
+          <div class="card">
+            <div class="gauge">
+              <svg viewBox="0 0 200 120"><path d="M20 105 A80 80 0 0 1 180 105" fill="none" stroke="#EFE8DD" stroke-width="16" stroke-linecap="round"/><path id="garc" d="M20 105 A80 80 0 0 1 180 105" fill="none" stroke="url(#gg)" stroke-width="16" stroke-linecap="round" stroke-dasharray="0 252"/><defs><linearGradient id="gg"><stop offset="0" stop-color="#14B8A6"/><stop offset=".6" stop-color="#E8B04A"/><stop offset="1" stop-color="#F0705A"/></linearGradient></defs></svg>
+              <div class="val"><div><b id="score">0</b><span class="pill" id="pill">—</span></div></div>
+            </div>
+            <p class="why" id="why"></p>
+          </div>
+        </div>
+      </article>
+
+      <article class="slide">
+        <div class="wrap grid2">
+          <div class="rise">
+            <span class="kicker"><i></i>عروض الأسعار</span>
+            <h2>3 مراكز <em>بتتنافس</em> على الحالة</h2>
+            <p class="lead">الحالة بتتبعت مجهّلة لمراكز مناسبة ليها. كل مركز بيقدّم سعره ووَصْل بتختار على السعر والجودة مع بعض مش السعر لوحده.<span class="illus">أرقام توضيحية</span></p>
+            <div class="cta-row"><button class="btn pri" id="replay" style="color:#fff">اطلب العروض من جديد</button></div>
+          </div>
+          <div>
+            <div class="quotes" id="quotes"></div>
+            <div class="save" id="save"><div><small style="color:#9fc1c4">التوفير على الجمعية في الحالة دي</small><br><b id="saveV">0</b></div><div style="margin-inline-start:auto;font-size:13px;color:#bcd3d6;max-width:200px">جزء من التوفير ده هو دخل وَصْل</div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="slide">
+        <div class="wrap grid2">
+          <div class="rise">
+            <span class="kicker"><i></i>المتابعة</span>
+            <h2>الجمعية والمتبرع <em>شايفين الحالة</em> لحظة بلحظة</h2>
+            <p class="lead">كل تحديث من المركز بيوصل للجمعية وكل ريال متصرف مربوط بفاتورة. وده اللي بيخلّي المتبرع يرجع يتبرع تاني.</p>
+            <div class="track" id="track">
+              <div class="ev"><b>الحالة اتقبلت في المركز</b><small>عرض السعر اتوقّع وتاريخ الدخول اتحدد</small></div>
+              <div class="ev"><b>دخول المستشفى</b><small>تأكيد من المركز وصورة من الفاتورة المبدئية</small></div>
+              <div class="ev"><b>العملية تمت</b><small>تقرير طبي مختصر للجمعية</small></div>
+              <div class="ev"><b>متابعة بعد 30 يوم</b><small>زيارة المتابعة وحالة المريض</small></div>
+            </div>
+          </div>
+          <div class="phone"><div class="scr">
+            <div class="hd"><span>9:41</span><b style="color:var(--ink)">حالات الجمعية</b><span>●●●</span></div>
+            <div class="case"><div class="row"><b>حالة 1042 · قلب</b><span class="pill p-crit" style="margin:0;padding:2px 8px;font-size:11px">حرجة</span></div><div class="row" style="color:var(--muted);margin-top:4px"><span>في المستشفى</span><span>75%</span></div><div class="prog"><i style="--p:75%"></i></div></div>
+            <div class="case"><div class="row"><b>حالة 1038 · عظام</b><span class="pill p-high" style="margin:0;padding:2px 8px;font-size:11px">عالية</span></div><div class="row" style="color:var(--muted);margin-top:4px"><span>مستني العروض</span><span>35%</span></div><div class="prog"><i style="--p:35%"></i></div></div>
+            <div class="case"><div class="row"><b>حالة 1031 · عيون</b><span class="pill p-mid" style="margin:0;padding:2px 8px;font-size:11px">متوسطة</span></div><div class="row" style="color:var(--muted);margin-top:4px"><span>تمت · متابعة</span><span>100%</span></div><div class="prog"><i style="--p:100%"></i></div></div>
+            <div class="case" style="background:var(--mint);border-color:#bfe8df"><div class="row"><b>التوفير هذا الشهر</b><b style="font-family:Alexandria;color:var(--teal)">41,600 ر.س</b></div><div class="row" style="color:#2f6f6c;margin-top:4px"><span>على 9 حالات</span><span>أرقام توضيحية</span></div></div>
+          </div></div>
+        </div>
+      </article>
+
+      <article class="slide">
+        <div class="wrap grid2">
+          <div class="rise legend">
+            <span class="kicker"><i></i>دراسة الجدوى · حجم السوق</span>
+            <h2>من السوق كله <em>للشريحة اللي هنبدأ بيها</em></h2>
+            <p class="lead" style="margin-bottom:18px">الدوائر بتتحسب في العرض النهائي من مصادر رسمية منشورة ومع كل رقم مصدره.<span class="illus">أرقام توضيحية</span></p>
+            <div class="card"><b>السوق الكلي</b> · كل الإنفاق الخيري على العلاج في المملكة</div>
+            <div class="card"><b>السوق المتاح</b> · الجمعيات اللي عندها برنامج علاج قائم</div>
+            <div class="card"><b>السوق المستهدف</b> · أول 3 مدن في أول 18 شهر</div>
+          </div>
+          <div class="rings">
+            <div class="ring r1"><div><b>1.2 مليار ر.س</b><small>السوق الكلي</small></div></div>
+            <div class="ring r2"><div><b>380 مليون ر.س</b><small>السوق المتاح</small></div></div>
+            <div class="ring r3"><div><b>45 مليون</b><small>المستهدف</small></div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="slide">
+        <div class="wrap grid2 calc">
+          <div class="rise">
+            <span class="kicker"><i></i>نموذج الإيرادات</span>
+            <h2>وَصْل بتكسب <em>لما الجمعية توفّر</em></h2>
+            <div class="stream"><span class="pct">%</span><div><b>نسبة من التوفير</b><br><small style="color:var(--muted)">الدخل الأساسي ومرتبط بنجاح الجمعية مش بحجم الفاتورة</small></div></div>
+            <div class="stream"><span class="pct">ر.س</span><div><b>اشتراك شهري للجمعيات</b><br><small style="color:var(--muted)">لوحة الحالات والتقارير للمتبرعين</small></div></div>
+            <div class="stream"><span class="pct">+</span><div><b>رسوم إدراج للمراكز</b><br><small style="color:var(--muted)">المركز بيدفع عشان يستقبل حالات مدروسة وجاهزة</small></div></div>
+          </div>
+          <div class="card">
+            <b style="font-family:Alexandria;font-size:18px">احسبها بنفسك</b><span class="illus">مدخلات توضيحية</span>
+            <div class="sl"><label>حالات في الشهر <span id="cV">60</span></label><input type="range" min="10" max="400" step="10" value="60" id="cN"></div>
+            <div class="sl"><label>متوسط تكلفة الحالة <span id="aV">28,000 ر.س</span></label><input type="range" min="5000" max="120000" step="1000" value="28000" id="aN"></div>
+            <div class="sl"><label>نسبة التوفير بالتفاوض <span id="sV">18%</span></label><input type="range" min="5" max="35" value="18" id="sN"></div>
+            <div class="sl"><label>نصيب وَصْل من التوفير <span id="fV">25%</span></label><input type="range" min="10" max="40" value="25" id="fN"></div>
+            <div class="out">
+              <div><small>توفير الجمعيات في الشهر</small><b id="o1">0</b></div>
+              <div><small>دخل وَصْل في الشهر</small><b id="o2">0</b></div>
+              <div><small>دخل وَصْل في السنة</small><b id="o3">0</b></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="slide">
+        <div class="wrap">
+          <div class="rise"><span class="kicker"><i></i>خطة العمل</span>
+          <h2>4 مراحل <em>من التجربة للتوسع</em></h2></div>
+          <div class="road rise">
+            <div class="ph"><span class="q4">الشهور 1 – 3</span><h3>تجربة</h3><ul><li>3 جمعيات شريكة</li><li>5 مراكز طبية</li><li>أول 50 حالة يدوي مع النظام</li></ul></div>
+            <div class="ph"><span class="q4">الشهور 4 – 6</span><h3>إثبات</h3><ul><li>محرك الأولوية آلي</li><li>تقرير توفير لكل جمعية</li><li>أول اشتراكات مدفوعة</li></ul></div>
+            <div class="ph"><span class="q4">الشهور 7 – 12</span><h3>نمو</h3><ul><li>15 جمعية في 3 مدن</li><li>عروض أسعار إلكترونية</li><li>بوابة للمتبرعين</li></ul></div>
+            <div class="ph"><span class="q4">السنة التانية</span><h3>توسع</h3><ul><li>كل مناطق المملكة</li><li>شراكات تأمين صحي خيري</li><li>دول الخليج</li></ul></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="slide">
+        <div class="wrap grid2">
+          <div class="rise">
+            <span class="kicker"><i></i>التمويل المطلوب</span>
+            <h2>استخدام التمويل <em>على 18 شهر</em></h2>
+            <p class="lead">كل جزء من التمويل مربوط بمرحلة في الخطة ومؤشر يقيسها.<span class="illus">نسب توضيحية</span></p>
+            <div id="legend" style="margin-top:16px;display:grid;gap:10px"></div>
+          </div>
+          <svg class="donut" viewBox="0 0 200 200" id="donut"><text x="100" y="96" text-anchor="middle" style="font:800 22px Alexandria;fill:var(--ink)">2.5 مليون</text><text x="100" y="120" text-anchor="middle" style="font:500 12px 'IBM Plex Sans Arabic';fill:var(--muted)">ريال · توضيحي</text></svg>
+        </div>
+      </article>
+
+      <article class="slide cover">
+        <div class="wrap rise" style="text-align:center">
+          <span class="kicker" style="margin-inline:auto"><i></i>الخلاصة</span>
+          <h1 style="font-size:clamp(34px,5.5vw,70px)">الجمعية تركّز في الحالة<br><span>ووَصْل تكمّل الطريق</span></h1>
+          <p class="lead" style="margin:0 auto">نموذج بيكسب لما الجمعية توفّر والمريض يتعالج أسرع والمتبرع يشوف أثر فلوسه.</p>
+          <div class="cta-row" style="justify-content:center"><button class="btn pri" data-tab="comps">شوف الشركات المماثلة في أمريكا</button><button class="btn ghost" data-go="0">من الأول</button></div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ================= COMPARABLES DECK ================= -->
+    <section class="deck" id="comps">
+      <article class="slide cover">
+        <div class="wrap rise">
+          <span class="kicker"><i></i>العرض التاني · السوق الأمريكي</span>
+          <h1>4 شركات<br><span>كل واحدة بتحل جزء</span></h1>
+          <p class="lead">وَصْل بتجمع في خدمة واحدة اللي الشركات دي بتعمله منفصل: تمويل الحالة وفرزها والتفاوض على السعر والمتابعة بعد العلاج.</p>
+          <div class="cta-row"><button class="btn pri" data-go="1">ابدأ</button></div>
+        </div>
+      </article>
+
+      <article class="slide"><div class="wrap comp">
+        <div class="rise">
+          <span class="kicker"><i></i>منظمة غير ربحية · تمويل جماعي</span>
+          <h2>Watsi</h2>
+          <p class="lead">شركاء طبيين بيفرزوا المرضى اللي مايقدروش يدفعوا وبيعملوا لكل مريض صفحة بتكلفة علاجه والمتبرعين بيموّلوها.</p>
+          <div class="flow"><span>المركز الطبي يفرز</span><i>←</i><span>صفحة للمريض</span><i>←</i><span>تمويل من المتبرعين</span><i>←</i><span>الفلوس للمركز بعد العلاج</span><i>←</i><span>تحديث للمتبرع</span></div>
+          <div class="take"><b>اللي ناخده منها</b>شفافية تكلفة كل حالة وتحديث المتبرع بعد العلاج.</div>
+        </div>
+        <div><div class="logoTile" style="background:linear-gradient(135deg,#1f7a8c,#0b3c49)">Watsi<small>تمويل جماعي لعلاج المرضى</small></div>
+          <div class="facts"><div><small>الدعم</small><b>أول منظمة غير ربحية تدعمها Y Combinator</b></div><div><small>الدخل</small><b>تبرعات اختيارية للتشغيل</b></div></div></div>
+      </div></article>
+
+      <article class="slide"><div class="wrap comp">
+        <div class="rise">
+          <span class="kicker"><i></i>شركة ناشئة · قطاع أصحاب العمل</span>
+          <h2>Carrum Health</h2>
+          <p class="lead">بتبيع لأصحاب العمل وصول لمراكز تميّز جراحية وعلاج أورام بسعر شامل متفاوض عليه مقدمًا ومعاه منسّق رعاية لكل مريض.</p>
+          <div class="flow"><span>صاحب العمل</span><i>←</i><span>سعر شامل متفاوض عليه</span><i>←</i><span>مركز تميّز</span><i>←</i><span>منسّق رعاية</span></div>
+          <div class="take"><b>اللي ناخده منها</b>السعر الشامل المتفاوض عليه مقدمًا بدل الفاتورة المفتوحة.</div>
+        </div>
+        <div><div class="logoTile" style="background:linear-gradient(135deg,#3b5bdb,#1c2c6b)">Carrum<small>أسعار شاملة لمراكز التميّز</small></div>
+          <div class="facts"><div><small>من شركائها</small><b>Mayo Clinic · Johns Hopkins · Memorial Sloan Kettering</b></div><div><small>الدخل</small><b>من المدفوعات الشاملة لأصحاب العمل</b></div></div></div>
+      </div></article>
+
+      <article class="slide"><div class="wrap comp">
+        <div class="rise">
+          <span class="kicker"><i></i>منصة رعاية تخصصية</span>
+          <h2>Lantern</h2>
+          <p class="lead">اسمها القديم Employer Direct Healthcare وبرنامجها SurgeryPlus. أسعار ثابتة لكل حالة ومعها فريق رعاية من منسّقين وممرضين طول رحلة المريض.</p>
+          <div class="flow"><span>صاحب العمل</span><i>←</i><span>سعر ثابت للحالة</span><i>←</i><span>شبكة مراكز مختارة</span><i>←</i><span>منسّق وممرض</span></div>
+          <div class="take"><b>اللي ناخده منها</b>شبكة مراكز مختارة على الجودة ومنسّق ثابت لكل حالة.</div>
+        </div>
+        <div><div class="logoTile" style="background:linear-gradient(135deg,#f08c00,#a34d00)">Lantern<small>رعاية تخصصية بأسعار ثابتة</small></div>
+          <div class="facts"><div><small>الشبكة</small><b>بتقول إن عندها حوالي 1,500 منشأة شريكة</b></div><div><small>من 2025</small><b>نشرت طريقة حساب التوفير كاملة</b></div></div></div>
+      </div></article>
+
+      <article class="slide"><div class="wrap comp">
+        <div class="rise">
+          <span class="kicker"><i></i>منظمة غير ربحية</span>
+          <h2>Dollar For</h2>
+          <p class="lead">بتساعد المرضى يقدّموا على برامج الرعاية الخيرية في المستشفيات اللي ممكن تخفّض الفاتورة أو تلغيها. مابتدفعش الفاتورة بنفسها.</p>
+          <div class="flow"><span>فحص الأهلية</span><i>←</i><span>تجهيز الطلب</span><i>←</i><span>التقديم للمستشفى</span><i>←</i><span>تخفيض أو إلغاء</span></div>
+          <div class="take"><b>اللي ناخده منها</b>ملف الحالة الجاهز اللي المستشفى بيقبله من أول مرة.</div>
+        </div>
+        <div><div class="logoTile" style="background:linear-gradient(135deg,#2b8a3e,#114d22)">Dollar For<small>الرعاية الخيرية في المستشفيات</small></div>
+          <div class="facts"><div><small>مدة التقديم</small><b>غالبًا خلال 240 يوم من الفاتورة</b></div><div><small>الأساس القانوني</small><b>المستشفيات غير الربحية ملزمة ببرنامج مساعدة مالية</b></div></div></div>
+      </div></article>
+
+      <article class="slide"><div class="wrap">
+        <div class="rise"><span class="kicker"><i></i>المقارنة</span>
+        <h2>وَصْل <em>بتجمع الأربعة</em> في خدمة واحدة</h2></div>
+        <table class="mx">
+          <tr><th>الشركة</th><th>فرز الحالة</th><th>التفاوض على السعر</th><th>تمويل الحالة</th><th>المتابعة بعد القبول</th></tr>
+          <tr><td>Watsi</td><td><span class="yes">✓</span></td><td><span class="no">–</span></td><td><span class="yes">✓</span></td><td><span class="yes">✓</span></td></tr>
+          <tr><td>Carrum Health</td><td><span class="no">–</span></td><td><span class="yes">✓</span></td><td><span class="no">–</span></td><td><span class="yes">✓</span></td></tr>
+          <tr><td>Lantern</td><td><span class="no">–</span></td><td><span class="yes">✓</span></td><td><span class="no">–</span></td><td><span class="yes">✓</span></td></tr>
+          <tr><td>Dollar For</td><td><span class="yes">✓</span></td><td><span class="no">–</span></td><td><span class="no">–</span></td><td><span class="no">–</span></td></tr>
+          <tr><td>وَصْل</td><td><span class="yes">✓</span></td><td><span class="yes">✓</span></td><td><span class="yes">✓</span></td><td><span class="yes">✓</span></td></tr>
+        </table>
+        <div class="cta-row"><button class="btn pri" data-tab="pitch">ارجع للعرض الاستثماري</button></div>
+      </div></article>
+    </section>
+  </main>
+
+  <footer class="nav">
+    <button class="arrow" id="prev" aria-label="السابق"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg></button>
+    <button class="arrow" id="next" aria-label="التالي"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <div class="dots" id="dots"></div>
+    <span class="count" id="count"></span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const fmt=n=>Math.round(n).toLocaleString('en-US');
+  let deck='pitch', idx={pitch:0,comps:0};
+  const slides=d=>$$('#'+d+' .slide');
+
+  function render(){
+    const list=slides(deck), i=idx[deck];
+    list.forEach((s,k)=>{s.classList.toggle('on',k===i);s.classList.toggle('past',k<i)});
+    $('#dots').innerHTML=list.map((_,k)=>`<button class="${k===i?'on':''}" data-dot="${k}" aria-label="شريحة ${k+1}"></button>`).join('');
+    $('#count').textContent=(i+1)+' / '+list.length;
+    $('#prev').disabled=i===0; $('#next').disabled=i===list.length-1;
+    $('#prog').style.width=((i+1)/list.length*100)+'%';
+    enter(list[i]);
+  }
+  function go(n){const l=slides(deck).length; idx[deck]=Math.max(0,Math.min(l-1,n)); render()}
+  function tab(d){deck=d;$$('.deck').forEach(x=>x.classList.toggle('on',x.id===d));$$('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.deck===d));render()}
+
+  document.addEventListener('click',e=>{
+    const t=e.target.closest('[data-go],[data-tab],[data-dot],[data-deck]'); if(!t) return;
+    if(t.dataset.go!==undefined) go(+t.dataset.go);
+    else if(t.dataset.tab) {tab(t.dataset.tab);go(0)}
+    else if(t.dataset.dot!==undefined) go(+t.dataset.dot);
+    else if(t.dataset.deck) tab(t.dataset.deck);
+  });
+  $('#next').onclick=()=>go(idx[deck]+1); $('#prev').onclick=()=>go(idx[deck]-1);
+  document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT') return;
+    if(e.key==='ArrowLeft'||e.key===' '||e.key==='PageDown'){e.preventDefault();go(idx[deck]+1)}
+    if(e.key==='ArrowRight'||e.key==='PageUp'){e.preventDefault();go(idx[deck]-1)}
+  });
+  let tx=null;
+  document.addEventListener('touchstart',e=>{if(e.target.closest('input'))return;tx=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60)go(idx[deck]+(dx>0?1:-1));tx=null});
+  $('#fs').onclick=()=>{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()};
+
+  /* journey */
+  const J=[
+    ['استقبال','الجمعية بترفع الحالة','الجمعية بترفع بيانات الحالة والتقارير من شاشة واحدة أو من واتساب.','M12 5v14M5 12h14'],
+    ['دراسة','مراجعة طبية','فريق وَصْل الطبي بيراجع التقارير ويحدد التخصص المطلوب ونوع الإجراء.','M9 12l2 2 4-4M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z'],
+    ['أولوية','درجة من 100','محرك الأولوية بيدّي الحالة درجة بنفس المعايير لكل الحالات.','M3 17l6-6 4 4 8-8'],
+    ['إحالة','للمراكز المناسبة','الحالة بتتبعت مجهّلة لـ 3 مراكز مناسبة للتخصص والمنطقة.','M5 12h14M13 6l6 6-6 6'],
+    ['عرض سعر','أفضل قيمة','المراكز بتقدّم أسعارها ووَصْل بتختار على السعر والجودة وبتتفاوض.','M12 2v20M17 6H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6'],
+    ['متابعة','لحد التعافي','كل تحديث من المركز بيوصل للجمعية والمتبرع لحد زيارة المتابعة.','M3 12h4l3 8 4-16 3 8h4']
+  ];
+  $('#journey').insertAdjacentHTML('beforeend',J.map((s,k)=>`<div class="step" data-j="${k}"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${s[3]}"/></svg></div><b>${s[0]}</b><small>${s[1]}</small></div>`).join(''));
+  let jt=null,jc=0;
+  function setJ(k){jc=k;$$('.step').forEach((s,i)=>{s.classList.toggle('done',i<=k);s.classList.toggle('cur',i===k)});
+    $('#jfill').style.width=(k/(J.length-1)*88)+'%';
+    $('#jdetail').innerHTML=`<div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="${J[k][3]}"/></svg></div><div><b style="font-family:Alexandria;font-size:18px">الخطوة ${k+1} · ${J[k][0]}</b><p style="color:#4c626b;margin-top:4px;line-height:1.8">${J[k][2]}</p></div></div>`}
+  $('#journey').addEventListener('click',e=>{const s=e.target.closest('.step');if(!s)return;clearInterval(jt);setJ(+s.dataset.j)});
+  function playJ(){clearInterval(jt);setJ(0);jt=setInterval(()=>{if(jc>=J.length-1){clearInterval(jt);return}setJ(jc+1)},1500)}
+
+  /* priority */
+  const W=[.35,.3,.15,.2];
+  function score(){
+    const v=[1,2,3,4].map(i=>+$('#s'+i).value);
+    v.forEach((x,i)=>$('#v'+(i+1)).textContent=x);
+    const s=Math.round(v.reduce((a,x,i)=>a+x*W[i],0)*10);
+    $('#score').textContent=s;
+    $('#garc').setAttribute('stroke-dasharray',(s/100*252)+' 252');
+    const p=$('#pill');
+    if(s>=75){p.className='pill p-crit';p.textContent='أولوية حرجة · خلال 48 ساعة'}
+    else if(s>=55){p.className='pill p-high';p.textContent='أولوية عالية · خلال أسبوع'}
+    else{p.className='pill p-mid';p.textContent='أولوية عادية · خلال شهر'}
+    const top=['الخطورة','الاستعجال','الاحتياج المادي','فرصة التعافي'][v.map((x,i)=>x*W[i]).indexOf(Math.max(...v.map((x,i)=>x*W[i])))];
+    $('#why').textContent='أكتر عامل رافع الدرجة: '+top+'. الأوزان: الخطورة 35% والاستعجال 30% والتعافي 20% والاحتياج 15%.';
+  }
+  [1,2,3,4].forEach(i=>$('#s'+i).addEventListener('input',score));
+
+  /* quotes */
+  const Q=[['مستشفى الشفاء التخصصي','تقييم الجودة 4.6','48,500'],['مركز الرعاية الطبي','تقييم الجودة 4.8','41,200'],['مستشفى النخبة','تقييم الجودة 4.4','55,000']];
+  function playQ(){
+    const box=$('#quotes');box.innerHTML=Q.map((q,k)=>`<div class="q" data-q="${k}"><div class="nm"><b>${q[0]}</b><small>${q[1]}</small></div><div class="bar"><i></i></div><div class="pr">${q[2]}<small>ريال</small></div></div>`).join('');
+    $('#save').classList.remove('in');
+    const rows=$$('.q');
+    rows.forEach((r,k)=>setTimeout(()=>{r.classList.add('in');r.querySelector('.bar i').style.width=(+Q[k][2].replace(',','')/55000*100)+'%'},350+k*450));
+    setTimeout(()=>{rows[1].classList.add('best');$('#save').classList.add('in');count($('#saveV'),13800,' ر.س')},350+3*450+500);
+  }
+  $('#replay').onclick=playQ;
+  function count(el,to,suf){const t0=performance.now(),d=1100;(function f(t){const p=Math.min(1,(t-t0)/d);el.textContent=fmt(to*(1-Math.pow(1-p,3)))+(suf||'');if(p<1)requestAnimationFrame(f)})(t0)}
+
+  /* tracking */
+  function playT(){const ev=$$('#track .ev');ev.forEach(e=>e.classList.remove('in','live'));ev.forEach((e,k)=>setTimeout(()=>{ev.forEach(x=>x.classList.remove('live'));e.classList.add('in');if(k<ev.length-1)e.classList.add('live')},300+k*700))}
+
+  /* revenue calc */
+  function calc(){
+    const n=+$('#cN').value,a=+$('#aN').value,s=+$('#sN').value/100,f=+$('#fN').value/100;
+    $('#cV').textContent=n;$('#aV').textContent=fmt(a)+' ر.س';$('#sV').textContent=Math.round(s*100)+'%';$('#fV').textContent=Math.round(f*100)+'%';
+    const sav=n*a*s, rev=sav*f;
+    $('#o1').textContent=fmt(sav)+' ر.س';$('#o2').textContent=fmt(rev)+' ر.س';$('#o3').textContent=fmt(rev*12)+' ر.س';
+  }
+  ['cN','aN','sN','fN'].forEach(i=>$('#'+i).addEventListener('input',calc));
+
+  /* donut */
+  const D=[['تطوير المنصة',35,'#0F8B8D'],['الفريق الطبي',25,'#14B8A6'],['شراكات الجمعيات والمراكز',20,'#E8B04A'],['التشغيل',12,'#F0705A'],['احتياطي',8,'#9db5bb']];
+  function playD(){
+    const svg=$('#donut');svg.querySelectorAll('circle').forEach(c=>c.remove());
+    const C=2*Math.PI*70;let off=0;
+    D.forEach(d=>{const c=document.createElementNS('http://www.w3.org/2000/svg','circle');c.setAttribute('cx',100);c.setAttribute('cy',100);c.setAttribute('r',70);c.setAttribute('stroke',d[2]);c.setAttribute('stroke-dasharray','0 '+C);c.setAttribute('stroke-dashoffset',-off/100*C);svg.insertBefore(c,svg.firstChild);const len=d[1]/100*C;setTimeout(()=>c.setAttribute('stroke-dasharray',(len-2)+' '+C),80);off+=d[1]});
+    $('#legend').innerHTML=D.map(d=>`<div style="display:flex;align-items:center;gap:10px"><i style="width:12px;height:12px;border-radius:4px;background:${d[2]}"></i><span style="flex:1">${d[0]}</span><b style="font-family:Alexandria">${d[1]}%</b></div>`).join('');
+  }
+
+  function enter(s){
+    if(s.contains($('#journey'))) playJ();
+    if(s.contains($('#score'))) score();
+    if(s.contains($('#quotes'))) playQ();
+    if(s.contains($('#track'))) playT();
+    if(s.contains($('#o1'))) calc();
+    if(s.contains($('#donut'))) playD();
+  }
+  render();
+})();
+</script>
+</body>
+</html>
